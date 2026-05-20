@@ -1,0 +1,52 @@
+[project]
+name = "drive-pipeline"
+version = "0.1.0"
+description = "Personal AI Memory OS — RAG pipeline over Google Drive"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Google Drive + Gemini
+    "google-api-python-client>=2.0",
+    "google-auth-httplib2>=0.2",
+    "google-auth-oauthlib>=1.0",
+    "google-generativeai>=0.7",
+    # Vector DB
+    "chromadb>=0.5",
+    # Text extraction
+    "pymupdf>=1.24",
+    "pdfplumber>=0.11",
+    "python-docx>=1.1",
+    # API server
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.29",
+    # Web / HTML fetching
+    "httpx>=0.27",
+    "beautifulsoup4>=4.12",
+    "readability-lxml>=0.8",
+    # File watcher
+    "watchdog>=4.0",
+    # Utilities
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+drive-pipeline = "main:main"
+
+[tool.uv]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
