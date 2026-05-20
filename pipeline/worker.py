@@ -15,6 +15,7 @@ from pathlib import Path
 import config
 from pipeline import queue
 from pipeline.chunker import chunk_text
+from pipeline.drive import archive_file
 from pipeline.embedder import embed_chunks
 from pipeline.metadata import build_metadata
 from pipeline.processors import document, image, url
@@ -63,6 +64,7 @@ def process_one(job: object) -> None:
 
     text = processor(file_path)
     chunks = chunk_text(text)
+    drive_result = archive_file(file_path, source_type)
     metadata_list = [
         build_metadata(
             job_id=job_id,
@@ -71,6 +73,10 @@ def process_one(job: object) -> None:
             source_type=source_type or "unknown",
             chunk_index=i,
             total_chunks=len(chunks),
+            drive_file_id=drive_result.file_id if drive_result else None,
+            drive_web_view_link=drive_result.web_view_link if drive_result else None,
+            drive_folder_id=drive_result.folder_id if drive_result else None,
+            drive_folder_path=drive_result.folder_path if drive_result else None,
         )
         for i in range(len(chunks))
     ]

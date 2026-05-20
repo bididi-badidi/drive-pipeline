@@ -3,7 +3,7 @@
 ## Phases
 
 - [x] v1 — Core Pipeline ([details](PLAN.md#v1))
-- [ ] v2 — Drive archive, Playwright fallback, duplicate detection, share shortcut
+- [ ] v2 — Drive archive implemented; Playwright fallback, duplicate detection, share shortcut pending
 - [ ] v3 — Summarization, backlinking, re-crawl
 
 ## Project Documents

@@ -16,8 +16,12 @@ def build_metadata(
     chunk_index: int,
     total_chunks: int,
     tags: list[str] | None = None,
+    drive_file_id: str | None = None,
+    drive_web_view_link: str | None = None,
+    drive_folder_id: str | None = None,
+    drive_folder_path: str | None = None,
 ) -> dict:
-    return {
+    meta = {
         "chunk_id": str(uuid.uuid4()),
         "job_id": job_id,
         "filename": filename,
@@ -28,3 +32,12 @@ def build_metadata(
         "created_at": datetime.now(timezone.utc).isoformat(),
         "tags": tags or [],
     }
+    if drive_file_id:
+        meta["drive_file_id"] = drive_file_id
+    if drive_web_view_link:
+        meta["drive_web_view_link"] = drive_web_view_link
+    if drive_folder_id:
+        meta["drive_folder_id"] = drive_folder_id
+    if drive_folder_path:
+        meta["drive_folder_path"] = drive_folder_path
+    return meta

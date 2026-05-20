@@ -31,6 +31,27 @@ CHROMA_PERSIST_DIR: Path = _expand(os.getenv("CHROMA_PERSIST_DIR"), "~/.drive-pi
 CHROMA_COLLECTION_NAME: str | None = os.getenv("CHROMA_COLLECTION_NAME")
 SQLITE_DB_PATH: Path = _expand(os.getenv("SQLITE_DB_PATH"), "~/.drive-pipeline/jobs.db")
 
+# ── Google Drive archive ──────────────────────────────────────────────────────
+DRIVE_ARCHIVE_ENABLED: bool = os.getenv("DRIVE_ARCHIVE_ENABLED", "").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+GOOGLE_DRIVE_CREDENTIALS_PATH: Path = _expand(
+    os.getenv("GOOGLE_DRIVE_CREDENTIALS_PATH"),
+    "~/.drive-pipeline/google-drive-credentials.json",
+)
+GOOGLE_DRIVE_TOKEN_PATH: Path = _expand(
+    os.getenv("GOOGLE_DRIVE_TOKEN_PATH"),
+    "~/.drive-pipeline/google-drive-token.json",
+)
+GOOGLE_DRIVE_ROOT_FOLDER_ID: str | None = os.getenv("GOOGLE_DRIVE_ROOT_FOLDER_ID") or None
+GOOGLE_DRIVE_ARCHIVE_ROOT_NAME: str = os.getenv(
+    "GOOGLE_DRIVE_ARCHIVE_ROOT_NAME",
+    "drive-pipeline archive",
+)
+
 # ── Chunking ──────────────────────────────────────────────────────────────────
 CHUNK_SIZE: int = 512  # target tokens per chunk
 CHUNK_OVERLAP: int = 64  # overlap tokens between adjacent chunks
