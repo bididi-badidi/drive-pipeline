@@ -220,6 +220,23 @@ drive-pipeline/
 └── .claude/             # Claude Code memory and config
 ```
 
+## Development
+
+Install the local pre-commit hooks before committing:
+
+```bash
+uv run pre-commit install
+```
+
+Run all hooks manually with:
+
+```bash
+uv run pre-commit run --all-files
+```
+
+The hook suite checks for leaked secrets, fixes trailing whitespace / EOF issues,
+and runs Ruff linting + formatting through the project environment.
+
 ---
 
 ## Goal

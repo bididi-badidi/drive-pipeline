@@ -24,6 +24,7 @@ logging.getLogger("huggingface_hub").setLevel(logging.WARNING)
 logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
 logging.getLogger("transformers").setLevel(logging.WARNING)
 
+
 def main() -> None:
     config.ensure_dirs()
     queue.init_db()
