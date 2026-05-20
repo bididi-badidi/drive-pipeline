@@ -153,6 +153,64 @@ def _find_folder(service: Any, name: str, parent_id: str | None) -> str | None:
     return files[0]["id"] if files else None
 
 
+def list_archived_files(limit: int = 200) -> list[dict[str, Any]]:
+    """Return metadata for files in the Drive archive, newest first.
+
+    Only files visible under the drive.file scope (created by this app)
+    are returned. Folders are excluded.
+    """
+    if not config.DRIVE_ARCHIVE_ENABLED:
+        return []
+
+    service = _get_service()
+    _folder_name_cache: dict[str, str] = {}
+
+    def _folder_name(folder_id: str) -> str:
+        if folder_id not in _folder_name_cache:
+            try:
+                result = service.files().get(fileId=folder_id, fields="name").execute()
+                _folder_name_cache[folder_id] = result.get("name", folder_id)
+            except Exception:
+                _folder_name_cache[folder_id] = folder_id
+        return _folder_name_cache[folder_id]
+
+    rows: list[dict[str, Any]] = []
+    page_token: str | None = None
+
+    while len(rows) < limit:
+        kwargs: dict[str, Any] = {
+            "q": f"mimeType != '{FOLDER_MIME_TYPE}' and trashed = false",
+            "fields": (
+                "nextPageToken,files(id,name,size,createdTime,modifiedTime,parents,webViewLink)"
+            ),
+            "pageSize": min(limit - len(rows), 100),
+            "orderBy": "createdTime desc",
+        }
+        if page_token:
+            kwargs["pageToken"] = page_token
+
+        response = service.files().list(**kwargs).execute()
+        for f in response.get("files", []):
+            parents = f.get("parents") or []
+            parent_name = _folder_name(parents[0]) if parents else ""
+            rows.append(
+                {
+                    "file_id": f.get("id", ""),
+                    "name": f.get("name", ""),
+                    "folder": parent_name,
+                    "size_bytes": int(f.get("size") or 0),
+                    "created_at": (f.get("createdTime") or "").replace("T", " ").rstrip("Z"),
+                    "modified_at": (f.get("modifiedTime") or "").replace("T", " ").rstrip("Z"),
+                    "web_view_link": f.get("webViewLink") or "",
+                }
+            )
+        page_token = response.get("nextPageToken")
+        if not page_token:
+            break
+
+    return rows
+
+
 def _escape_query_value(value: str) -> str:
     return value.replace("\\", "\\\\").replace("'", "\\'")
 

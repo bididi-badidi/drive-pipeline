@@ -15,6 +15,7 @@ wheels/
 
 # Local agent handover notes
 .ai/assets/session_notes.md
+.ai/assets/progress.md
 
 # SQLite job queue
 *.db

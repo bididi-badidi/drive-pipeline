@@ -29,6 +29,7 @@ dependencies = [
     "watchdog>=4.0",
     # Utilities
     "python-dotenv>=1.0",
+    "gradio>=4",
 ]
 
 [project.scripts]

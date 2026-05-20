@@ -69,6 +69,50 @@ def query(
     ]
 
 
+def list_chunks(
+    where: dict | None = None,
+    limit: int = 100,
+    offset: int = 0,
+) -> list[dict]:
+    """Return stored chunks with documents and metadata."""
+    collection = _get_collection()
+    kwargs: dict = {
+        "include": ["documents", "metadatas"],
+        "limit": limit,
+        "offset": offset,
+    }
+    if where:
+        kwargs["where"] = where
+
+    results = collection.get(**kwargs)
+    ids = results.get("ids") or []
+    documents = results.get("documents") or []
+    metadatas = results.get("metadatas") or []
+    return [
+        {
+            "id": ids[i],
+            "document": documents[i] if i < len(documents) else "",
+            "metadata": metadatas[i] if i < len(metadatas) else {},
+        }
+        for i in range(len(ids))
+    ]
+
+
+def delete_chunks(where: dict) -> int:
+    """Delete chunks matching an exact Chroma metadata filter."""
+    if not where:
+        raise ValueError("delete_chunks requires a non-empty exact filter")
+
+    collection = _get_collection()
+    matches = collection.get(where=where, include=[])
+    ids = matches.get("ids") or []
+    if not ids:
+        return 0
+
+    collection.delete(ids=ids)
+    return len(ids)
+
+
 def _sanitise(meta: dict) -> dict:
     """Convert non-primitive metadata values to strings for ChromaDB."""
     out: dict = {}
