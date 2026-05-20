@@ -13,6 +13,9 @@ wheels/
 .env
 !.env.example
 
+# Local agent handover notes
+.ai/assets/session_notes.md
+
 # SQLite job queue
 *.db
 *.db-shm
