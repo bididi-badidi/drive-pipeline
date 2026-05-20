@@ -19,9 +19,9 @@ def _pdf(path: Path) -> str:
     import fitz  # pymupdf
 
     doc = fitz.open(path)
-    pages = [page.get_text() for page in doc]
+    pages = [f"--- Page {page.number + 1} ---\n{page.get_text()}" for page in doc]
     doc.close()
-    return "\n".join(pages)
+    return "\n\n".join(pages)
 
 
 def _docx(path: Path) -> str:

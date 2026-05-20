@@ -29,7 +29,7 @@ def _detect_type(path: Path) -> str | None:
                     return "url"
             except (IndexError, OSError):
                 pass
-        return "url" if suffix == ".url" else "document"
+        return suffix.lstrip(".")
     if suffix in config.IMAGE_EXTENSIONS:
         return "image"
     if suffix in config.URL_EXTENSIONS:

@@ -47,7 +47,9 @@ def test_pdf_extract(tmp_path):
     doc.save(p)
     doc.close()
 
-    assert "PDF document content" in extract(p)
+    extracted = extract(p)
+    assert "--- Page 1 ---" in extracted
+    assert "PDF document content" in extracted
 
 
 def test_docx_extract(tmp_path):

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import config
 from pipeline import queue
-from pipeline.chunker import chunk_text
+from pipeline.chunker import chunk_for_source
 from pipeline.embedder import embed_chunks
 from pipeline.metadata import build_metadata
 from pipeline.processors import document, image, url
@@ -27,7 +27,11 @@ POLL_INTERVAL = 10  # seconds between queue polls
 
 def _processor_for(source_type: str | None):
     dispatch = {
-        "document": document.extract,
+        "document": document.extract,  # legacy queued jobs
+        "pdf": document.extract,
+        "docx": document.extract,
+        "txt": document.extract,
+        "md": document.extract,
         "image": image.extract,
         "url": url.extract,
         "html": url.extract,  # reuses URL processor's HTML path
@@ -62,7 +66,7 @@ def process_one(job: object) -> None:
         raise ValueError(f"No processor for source_type={source_type!r}")
 
     text = processor(file_path)
-    chunks = chunk_text(text)
+    chunks = chunk_for_source(text, source_type)
     metadata_list = [
         build_metadata(
             job_id=job_id,

@@ -35,10 +35,13 @@ Worker picks up pending job
   ↓
 Detect type → dispatch to processor
   ├── URL (.url / .txt starting with http)  → HTTP fetch + Readability
-  ├── Document (.pdf / .txt / .md)          → pymupdf / plain read
+  ├── PDF (.pdf)                            → PyMuPDF page text
+  ├── DOCX (.docx)                          → python-docx paragraphs
+  ├── Text (.txt)                           → plain read
+  ├── Markdown (.md)                        → plain read
   └── Image (.jpg .png .webp .gif)          → OCR (Gemini Vision)
   ↓
-Chunker     — 300–800 tokens, 50–100 overlap
+Chunker     — routes by source type; Markdown is structure-aware
   ↓
 Metadata    — filename, source_type, chunk_index, total_chunks, created_at
   ↓
@@ -61,7 +64,7 @@ CREATE TABLE jobs (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   filename    TEXT NOT NULL,
   source_path TEXT NOT NULL,
-  source_type TEXT,           -- pdf | image | url | text | markdown
+  source_type TEXT,           -- pdf | docx | txt | md | image | url | html
   status      TEXT DEFAULT 'pending',  -- pending | processing | done | failed
   error       TEXT,
   created_at  TEXT NOT NULL,
@@ -77,7 +80,8 @@ CREATE TABLE jobs (
 |---|---|---|
 | PDF | `.pdf` | `pymupdf` |
 | Office docs | `.docx` | `python-docx` |
-| Plain text / notes | `.txt`, `.md` | built-in `open()` |
+| Plain text / notes | `.txt` | built-in `open()` |
+| Markdown | `.md` | built-in `open()` |
 | Images | `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif` | Gemini Vision (OCR) |
 | URLs | `.url`, or `.txt` whose first line is a URL | `httpx` + `readability-lxml` |
 | HTML | `.html`, `.htm` | `beautifulsoup4` |
@@ -92,7 +96,7 @@ CREATE TABLE jobs (
   "job_id":       1,
   "filename":     "original_filename.pdf",
   "source_path":  "/Users/user/Documents/toDrive/originals/original_filename.pdf",
-  "source_type":  "pdf | image | docx | txt | url | html",
+  "source_type":  "pdf | docx | txt | md | image | url | html",
   "chunk_index":  0,
   "total_chunks": 7,
   "created_at":   "2026-05-20T10:00:00Z",
@@ -118,7 +122,7 @@ drive-pipeline/
 │   │   ├── url.py                HTTP fetch + Readability extraction
 │   │   ├── document.py           PDF / txt / md / docx extraction
 │   │   └── image.py              OCR via Gemini Vision
-│   ├── chunker.py                token-aware chunking with overlap
+│   ├── chunker.py                source-aware chunking strategies
 │   ├── metadata.py               metadata dict builder
 │   ├── embedder.py               Gemini text-embedding-004
 │   └── vector_store.py           ChromaDB init, upsert, query helpers

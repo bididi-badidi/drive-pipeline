@@ -14,20 +14,20 @@ def _make_file(tmp_path, name, content=""):
 # ── Document extensions ────────────────────────────────────────────────────────
 
 
-def test_pdf_is_document(tmp_path):
-    assert _detect_type(_make_file(tmp_path, "report.pdf")) == "document"
+def test_pdf_source_type(tmp_path):
+    assert _detect_type(_make_file(tmp_path, "report.pdf")) == "pdf"
 
 
-def test_md_is_document(tmp_path):
-    assert _detect_type(_make_file(tmp_path, "notes.md", "# Hello")) == "document"
+def test_md_source_type(tmp_path):
+    assert _detect_type(_make_file(tmp_path, "notes.md", "# Hello")) == "md"
 
 
-def test_docx_is_document(tmp_path):
-    assert _detect_type(_make_file(tmp_path, "essay.docx")) == "document"
+def test_docx_source_type(tmp_path):
+    assert _detect_type(_make_file(tmp_path, "essay.docx")) == "docx"
 
 
-def test_txt_plain_is_document(tmp_path):
-    assert _detect_type(_make_file(tmp_path, "plain.txt", "just some text")) == "document"
+def test_txt_plain_source_type(tmp_path):
+    assert _detect_type(_make_file(tmp_path, "plain.txt", "just some text")) == "txt"
 
 
 # ── URL detection from .txt ────────────────────────────────────────────────────
@@ -43,9 +43,9 @@ def test_txt_starting_with_http_no_trailing(tmp_path):
     assert _detect_type(p) == "url"
 
 
-def test_txt_empty_file_is_document(tmp_path):
+def test_txt_empty_file_is_txt(tmp_path):
     p = _make_file(tmp_path, "empty.txt", "")
-    assert _detect_type(p) == "document"
+    assert _detect_type(p) == "txt"
 
 
 # ── .url extension ─────────────────────────────────────────────────────────────

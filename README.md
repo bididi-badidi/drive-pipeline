@@ -21,7 +21,7 @@ Background worker detects new file
   ↓
 Text extraction  (PDF → pymupdf, DOCX → python-docx, Audio → Whisper, OCR → Tesseract)
   ↓
-Chunking  (300–800 tokens, 50–100 token overlap)
+Chunking  (source-aware: text windows, Markdown sections, document blocks)
   ↓
 Embedding  (OpenAI text-embedding-3-small  or  local BGE/E5 model)
   ↓
@@ -203,7 +203,7 @@ Phone  →  Agent UI  →  Cloud VM / Home Server / Raspberry Pi
 ## Design Principles
 
 - **Never store full files in the vector DB.** Store chunks + embeddings + metadata + Drive references. Original files live in Drive.
-- **Chunking quality matters.** Use 300–800 token chunks with 50–100 token overlap. Poor chunking significantly degrades retrieval.
+- **Chunking quality matters.** Use source-aware chunking: plain text can use token windows with overlap, while Markdown should preserve headings, code fences, lists, tables, and paragraphs where possible.
 - **Metadata is not optional.** Tags, timestamps, source type, and Drive path enable filtering and time-aware search that pure vector similarity cannot provide.
 - **Decouple the agent from heavy processing.** The agent creates tasks; the worker does the work. This keeps the agent responsive and stateless.
 
