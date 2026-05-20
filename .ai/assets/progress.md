@@ -2,7 +2,10 @@
 
 ## Current Task
 
-v1 — not started
+v1 — skeleton complete, ready for implementation
+
+- [ ] Implement + test each module (start with `queue.py` → `watcher.py` → processors)
+- [ ] Integration smoke-test: drop a PDF into originals/ and verify ChromaDB entry
 
 ## Upcoming
 
@@ -18,6 +21,6 @@ v1 — not started
 
 ## Phases
 
-- [ ] v1 — Core Pipeline (config, queue, watcher, processors, chunker, embedder, vector store, worker)
+- [ ] v1 — Core Pipeline (skeleton done; implementation in progress)
 - [ ] v2 — Drive archive, Playwright fallback, duplicate detection, share shortcut
 - [ ] v3 — Summarization, backlinking, re-crawl

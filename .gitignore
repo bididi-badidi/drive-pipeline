@@ -8,3 +8,30 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Environment / secrets — ignore real .env, but always commit the example
+.env
+!.env.example
+
+# SQLite job queue
+*.db
+*.db-shm
+*.db-wal
+
+# ChromaDB local persistence
+chroma_data/
+.chroma/
+
+# toDrive working directories (local only, never committed)
+toDrive/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
