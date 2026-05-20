@@ -22,7 +22,7 @@ from pipeline.vector_store import upsert_chunks
 
 logger = logging.getLogger(__name__)
 
-POLL_INTERVAL = 2  # seconds between queue polls
+POLL_INTERVAL = 10  # seconds between queue polls
 
 
 def _processor_for(source_type: str | None):

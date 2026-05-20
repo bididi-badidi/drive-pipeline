@@ -2,12 +2,13 @@
 pipeline/vector_store.py — ChromaDB initialisation, upsert, and query helpers.
 """
 
+from __future__ import annotations
+
 import chromadb
 
 import config
 
 _client: chromadb.PersistentClient | None = None
-_COLLECTION_NAME = "drive_pipeline"
 
 
 def _get_collection() -> chromadb.Collection:
@@ -15,7 +16,7 @@ def _get_collection() -> chromadb.Collection:
     if _client is None:
         _client = chromadb.PersistentClient(path=str(config.CHROMA_PERSIST_DIR))
     return _client.get_or_create_collection(
-        name=_COLLECTION_NAME,
+        name=config.chroma_collection_name(),
         metadata={"hnsw:space": "cosine"},
     )
 

@@ -4,7 +4,8 @@ pipeline/processors/image.py — OCR via Gemini Vision.
 
 from pathlib import Path
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 import config
 
@@ -16,14 +17,17 @@ _PROMPT = (
 
 
 def extract(path: Path) -> str:
-    genai.configure(api_key=config.GOOGLE_API_KEY)
-    model = genai.GenerativeModel(config.VISION_MODEL)
+    client = genai.Client(api_key=config.GOOGLE_API_KEY)
 
     image_data = path.read_bytes()
     mime = _mime_for(path.suffix.lower())
 
-    response = model.generate_content(
-        [{"mime_type": mime, "data": image_data}, _PROMPT]
+    response = client.models.generate_content(
+        model=config.VISION_MODEL,
+        contents=[
+            types.Part.from_bytes(data=image_data, mime_type=mime),
+            _PROMPT,
+        ],
     )
     return response.text or ""
 

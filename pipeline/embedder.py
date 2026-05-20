@@ -1,12 +1,24 @@
 """
-pipeline/embedder.py — Gemini text-embedding-004 embeddings.
+pipeline/embedder.py — Local bge-m3 embeddings via sentence-transformers.
 """
 
-import google.generativeai as genai
+from __future__ import annotations
+
+from sentence_transformers import SentenceTransformer
 
 import config
 
-genai.configure(api_key=config.GOOGLE_API_KEY)
+_model: SentenceTransformer | None = None
+
+
+def _get_model() -> SentenceTransformer:
+    global _model
+    if _model is None:
+        _model = SentenceTransformer(
+            config.EMBEDDING_MODEL,
+            cache_folder=str(config.MODEL_CACHE_DIR),
+        )
+    return _model
 
 
 def embed_chunks(chunks: list[str]) -> list[list[float]]:
@@ -17,19 +29,13 @@ def embed_chunks(chunks: list[str]) -> list[list[float]]:
     if not chunks:
         return []
 
-    result = genai.embed_content(
-        model=config.EMBEDDING_MODEL,
-        content=chunks,
-        task_type="retrieval_document",
-    )
-    return result["embedding"]
+    model = _get_model()
+    vectors = model.encode(chunks, normalize_embeddings=True, show_progress_bar=False)
+    return vectors.tolist()
 
 
 def embed_query(query: str) -> list[float]:
     """Embed a single query string for retrieval."""
-    result = genai.embed_content(
-        model=config.EMBEDDING_MODEL,
-        content=query,
-        task_type="retrieval_query",
-    )
-    return result["embedding"]
+    model = _get_model()
+    vector = model.encode(query, normalize_embeddings=True, show_progress_bar=False)
+    return vector.tolist()

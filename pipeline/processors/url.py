@@ -30,7 +30,7 @@ def _read_url(path: Path) -> str:
     text = path.read_text(errors="replace")
     for line in text.splitlines():
         line = line.strip()
-        if line.startswith("URL="):          # Windows .url shortcut
+        if line.startswith("URL="):  # Windows .url shortcut
             return line[4:].strip()
         if line.startswith(("http://", "https://")):
             return line

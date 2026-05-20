@@ -3,7 +3,9 @@ config.py — centralised settings loaded from environment / .env file.
 All other modules import from here; nothing reads os.environ directly.
 """
 
+import hashlib
 import os
+import re
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -25,20 +27,37 @@ PROCESSING_DIR: Path = WATCH_DIR / "processing"
 FAILED_DIR: Path = WATCH_DIR / "failed"
 
 # ── Persistence ───────────────────────────────────────────────────────────────
-CHROMA_PERSIST_DIR: Path = _expand(
-    os.getenv("CHROMA_PERSIST_DIR"), "~/.drive-pipeline/chroma"
-)
-SQLITE_DB_PATH: Path = _expand(
-    os.getenv("SQLITE_DB_PATH"), "~/.drive-pipeline/jobs.db"
-)
+CHROMA_PERSIST_DIR: Path = _expand(os.getenv("CHROMA_PERSIST_DIR"), "~/.drive-pipeline/chroma")
+CHROMA_COLLECTION_NAME: str | None = os.getenv("CHROMA_COLLECTION_NAME")
+SQLITE_DB_PATH: Path = _expand(os.getenv("SQLITE_DB_PATH"), "~/.drive-pipeline/jobs.db")
 
 # ── Chunking ──────────────────────────────────────────────────────────────────
-CHUNK_SIZE: int = 512        # target tokens per chunk
-CHUNK_OVERLAP: int = 64      # overlap tokens between adjacent chunks
+CHUNK_SIZE: int = 512  # target tokens per chunk
+CHUNK_OVERLAP: int = 64  # overlap tokens between adjacent chunks
 
-# ── Gemini model IDs ──────────────────────────────────────────────────────────
-EMBEDDING_MODEL: str = "models/text-embedding-004"
-VISION_MODEL: str = "models/gemini-1.5-flash"
+# ── Model IDs ─────────────────────────────────────────────────────────────────
+MODEL_CACHE_DIR: Path = _expand(os.getenv("MODEL_CACHE_DIR"), "~/.drive-pipeline/models")
+EMBEDDING_MODEL: str = "BAAI/bge-m3"  # local sentence-transformers model
+VISION_MODEL: str = "models/gemini-2.5-flash"
+
+
+def chroma_collection_name() -> str:
+    """
+    Return the Chroma collection for the configured embedding model.
+
+    Chroma collections are dimension-locked after their first insert. Including
+    the model name avoids mixing embeddings when EMBEDDING_MODEL changes.
+    """
+    if CHROMA_COLLECTION_NAME:
+        return CHROMA_COLLECTION_NAME
+
+    slug = re.sub(r"[^a-zA-Z0-9_-]+", "_", EMBEDDING_MODEL).strip("_-").lower()
+    digest = hashlib.sha1(EMBEDDING_MODEL.encode("utf-8")).hexdigest()[:8]
+    prefix = "drive_pipeline"
+    max_slug_length = 63 - len(prefix) - len(digest) - 2
+    slug = slug[:max_slug_length].rstrip("_-")
+    return f"{prefix}_{slug}_{digest}"
+
 
 # ── Supported extensions (lower-case) ─────────────────────────────────────────
 DOCUMENT_EXTENSIONS: frozenset[str] = frozenset({".pdf", ".txt", ".md", ".docx"})

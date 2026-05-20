@@ -19,8 +19,12 @@ wheels/
 *.db-wal
 
 # ChromaDB local persistence
+chroma/
 chroma_data/
 .chroma/
+
+# Local model cache
+.models/
 
 # toDrive working directories (local only, never committed)
 toDrive/
