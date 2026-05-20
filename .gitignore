@@ -32,6 +32,9 @@ chroma_data/
 # toDrive working directories (local only, never committed)
 toDrive/
 
+# Branch-scoped agent planning assets
+.ai/assets/branches/
+
 # macOS
 .DS_Store
 .AppleDouble

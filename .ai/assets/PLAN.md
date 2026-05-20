@@ -156,7 +156,7 @@ drive-pipeline/
 - [ ] `main.py` — wires watcher + worker
 
 ### v2 — Enrichment + Drive Archive
-- [ ] `pipeline/drive.py` — Google Drive upload + folder structure
+- [x] `pipeline/drive.py` — Google Drive upload + folder structure
 - [ ] Playwright fallback for JS-heavy URLs
 - [ ] Duplicate detection by content hash and canonical URL
 - [ ] Browser/mobile share shortcut integration

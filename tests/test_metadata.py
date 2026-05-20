@@ -67,3 +67,19 @@ def test_values_match_inputs():
     assert meta["total_chunks"] == 5
     assert meta["filename"] == "test.pdf"
     assert meta["source_type"] == "pdf"
+
+
+def test_drive_metadata_is_added_when_present():
+    meta = build_metadata(
+        **_base_kwargs(
+            drive_file_id="drive-file",
+            drive_web_view_link="https://drive/file",
+            drive_folder_id="folder-id",
+            drive_folder_path="archive/document/2026/05",
+        )
+    )
+
+    assert meta["drive_file_id"] == "drive-file"
+    assert meta["drive_web_view_link"] == "https://drive/file"
+    assert meta["drive_folder_id"] == "folder-id"
+    assert meta["drive_folder_path"] == "archive/document/2026/05"
